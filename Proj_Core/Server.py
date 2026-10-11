@@ -6,7 +6,7 @@ import struct
 import selectors
 import collections
 
-sPort = 8000  # The server will be listening on this port number
+sPort = 7234  # The server will be listening on this port number
 
 class Server:
     @staticmethod
@@ -71,6 +71,6 @@ class Server:
                 print(f"Send message: {msg} to Client {self.no}")
             except OSError as e:
                 print(f"I/O error: {e}")
- 
+
 if __name__ == "__main__":
     Server.main()

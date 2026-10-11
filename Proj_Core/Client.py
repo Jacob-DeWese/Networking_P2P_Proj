@@ -2,7 +2,7 @@ import socket
 import sys
 
 class Client:
-    def __init__(self,host="localhost",port=8000):
+    def __init__(self,host="localhost",port=7234):
         self.host = host
         self.port = port
         self.requestSocket = None  # Socket connect to server
@@ -65,3 +65,25 @@ class Client:
 if __name__ == "__main__":
     client = Client()
     client.run()
+"""
+IMPORTANT TO IMPLEMENT
+Whenever the TCP connection is made to another peer, generate the log -->
+[Time]: Peer [peer_ID 1] makes a connection to Peer [peer_ID 2]
+- Time = hour:minute:second
+- peer_ID 1 = client
+- peer_ID 2 = server
+
+Whenever the peer changes its preferred neighbors, it generates the following log -->
+[Time]: Peer [peer_ID] has the preferred neighbors [preferred neighbor ID list]
+- [preferred neighbor list] = list of peer IDs separated by comma ','
+
+Whenever a peer changes its optimistically unchoked neighbor, it generates the following log -->
+[Time]: Peer [peer_ID] has the optimistically unchoked neighbor [optimistically unchoked neighbor ID]
+
+Whenever a peer is unchoked by a neighbor (when a peer receives an unchoking message), it generates the log -->
+[Time]: Peer [peer_ID 1] is unchoked by [peer_ID 2]
+- [peer_ID 1] = unchoked
+- [peer_ID 2] = peer who unchokes
+
+... (not writing them all out, but point is Client implements the log)
+"""
