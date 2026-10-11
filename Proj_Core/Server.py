@@ -71,6 +71,6 @@ class Server:
                 print(f"Send message: {msg} to Client {self.no}")
             except OSError as e:
                 print(f"I/O error: {e}")
-
+ 
 if __name__ == "__main__":
     Server.main()
