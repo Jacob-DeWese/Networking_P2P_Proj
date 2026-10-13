@@ -1,10 +1,19 @@
 import Client
 import Server
-class PeerProcess:
+import threading
+import time
+
+class PeerProcess():
     def __init__(self):
-        self.myClient = None
-        self.myServer = None
-        self.server_thread = None
+        self.server_thread = [];
+        self.client_thread = [];
+        #A list of servers listed in PeerInfo.cfg Need peerInfo reader!
+        #peer0= dict(peer_ID =1001, host="192.168.1.131", port=8000)
+        #peer1= dict(peer_ID =1002, host="192.168.1.139", port=8000)
+        peer0= dict(peer_ID =1001, host="10.138.187.221", port=8000)
+
+        #A list of dicts stores peers info.
+        self.peerInfo = [peer0]
 
     def startClient(self):
 
@@ -34,22 +43,18 @@ class PeerProcess:
                 break
 
     def startServer(self):
-        self.myServer = Server.Server()   
-        self.myServer.main();
-
-        ''''
         try:
-            
-            self.myServer = Server.Server()   
-            self.server_thread = threading.Thread(
-                target=self.myServer.start,  
+            server = Server.Server()
+            myServer = threading.Thread(
+                target=server.main,
                 daemon=True
             )
-            self.server_thread.run()
+            myServer.start()              
             print("Server started in background thread.")
+            self.server_thread.append(myServer)
         except Exception as e:
             print(f"Failed to start server: {e}")
-        '''
+
 
     def run(self):
         """Start both server and client."""
