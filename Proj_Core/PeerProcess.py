@@ -15,18 +15,21 @@ class PeerProcess():
         #A list of dicts stores peers info.
         self.peerInfo = [peer0]
 
+
+    #Attempt connections to every peer that may already be running.
     def startClient(self):
+        #for the first peerprocess
+        if len(self.peerInfo) == 0:
+            print("No server available")
+            return
 
-        while True:
-            addrLocalhost = input("Please enter the remote host (IP or localhost): ").strip()
-            portNum = input("Please enter the remote port: ").strip()
+        print("There are " + str(len(self.peerInfo)) + " servers available")
 
-            if not addrLocalhost:
-                print("Host cannot be empty. Try again.")
-                continue
+        for peer in self.peerInfo:
+            addrLocalhost = peer["host"]
+            port = peer["port"]
 
             try:
-                port = int(portNum)
                 if not (1 <= port <= 65535):
                     raise ValueError("Port out of range")
             except ValueError:
@@ -34,13 +37,17 @@ class PeerProcess():
                 continue
 
             try:
-                self.myClient = Client.Client(addrLocalhost, port)  
+                client = Client.Client(addrLocalhost, port)
+                # IMPORTANT: pass the method itself, do NOT call it
+                myClient = threading.Thread(
+                    target=client.run,
+                    daemon=True
+                )
+                myClient.start()          
                 print(f"Client created for {addrLocalhost}:{port}")
-                self.myClient.run();
-                break;
+                self.client_thread.append(myClient)
             except Exception as e:
-                print(f"Failed client: {e}")
-                break
+                print(f"Failed client for {addrLocalhost}:{port}: {e}")
 
     def startServer(self):
         try:
@@ -57,14 +64,17 @@ class PeerProcess():
 
 
     def run(self):
-        """Start both server and client."""
-        print("Starting PeerProcess...")
-        self.startServer()   
-        self.startClient()   
+        print("Starting PeerProcess.")
 
-        #keep the main thread alive
-        if self.server_thread is not None:
-            self.server_thread.join()
+        self.startClient()
+
+        time.sleep(0.5)
+
+        self.startServer()
+
+        # Keep the main thread alive while any clients run
+        for t in self.server_thread:
+            t.join()
     
 def main():
     print("main is called")
