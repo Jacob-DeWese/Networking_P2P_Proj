@@ -6,10 +6,17 @@ import struct
 import selectors
 import collections
 from Logger import log_event
+from ConfigReader import read_common_cfg
+from Message import MESSAGE_TYPES, MESSAGE_NAMES
+from math import ceil
 
 sPort = 8000  # The server will be listening on this port number
 tcpEstablished = changeNeighPref = changeUnchokeNeigh = unchoking = choking = receiveHave = \
     receiveInter = receiveNoInter = dwnldPiece = cmpltDwnld = False
+interestFromPeer = uninterestFromPeer = havePieceInd = haveFromPeer = pieceDwnldInd = pieceFromPeer = None
+
+cfg = read_common_cfg()
+cfgNumPieces = ceil(cfg["FileSize"] / cfg["PieceSize"])
 
 class Server:
     @staticmethod
@@ -20,11 +27,22 @@ class Server:
         try:
             while True:
                 conn, _addr = listener.accept()
+                global tcpEstablished, changeNeighPref, changeUnchokeNeigh, unchoking, choking, receiveHave, \
+                    receiveInter, receiveNoInter, dwnldPiece, cmpltDwnld
                 tcpEstablished = True
                 Server.Handler(conn, clientNum).start()
                 log_event()
                 print(f"Client {clientNum} is connected.")
                 clientNum += 1
+
+                # Testing: Display boolean info to verify correct triggering
+                print(f"tcpEstablished: {tcpEstablished}; changeNeighPref: {changeNeighPref}; changeUnchokeNeigh: {changeUnchokeNeigh}; "
+                      f"unchoking: {unchoking}; choking: {choking}; receiveHave: {receiveHave}; receiveInter: {receiveInter}; "
+                      f"receiveNoInter: {receiveNoInter}; dwnldPiece: {dwnldPiece}; cmpltDwnld: {cmpltDwnld}; ")
+
+                # Reset all flags after logging
+                tcpEstablished = changeNeighPref = changeUnchokeNeigh = unchoking = choking = receiveHave = \
+                    receiveInter = receiveNoInter = dwnldPiece = cmpltDwnld = False
         finally:
             listener.close()
 

@@ -13,7 +13,7 @@ def log_event():
     unchoking = Server.unchoking
     choking = Server.choking
     receiveHave = Server.receiveHave
-    receiveInter = Server.receiveInter,
+    receiveInter = Server.receiveInter
     receiveNoInter = Server.receiveNoInter
     dwnldPiece = Server.dwnldPiece
     cmpltDwnld = Server.cmpltDwnld
@@ -31,10 +31,10 @@ def log_event():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file = f'log_peer_{peerID1}.log'
 
-    # # Testing purposes: clear logging file on new start (delete when necessary)
-    # with open(file, "r+") as f:
-    #     f.seek(0)
-    #     f.truncate()
+    # Testing purposes: clear logging file on new start (delete when necessary)
+    with open(file, "r+") as f:
+        f.seek(0)
+        f.truncate()
 
     log_path = os.path.join(script_dir, file)
     with open(log_path, 'a') as fp:
