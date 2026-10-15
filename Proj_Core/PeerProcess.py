@@ -1,19 +1,28 @@
+import sys
+
 import Client
 import Server
 import threading
 import time
 
+from ConfigReader import read_peer_info
+
 class PeerProcess():
-    def __init__(self):
+    def __init__(self, peer_id):
+        self.peer_id = peer_id
         self.server_thread = [];
         self.client_thread = [];
         #A list of servers listed in PeerInfo.cfg Need peerInfo reader!
         #peer0= dict(peer_ID =1001, host="192.168.1.131", port=8000)
         #peer1= dict(peer_ID =1002, host="192.168.1.139", port=8000)
-        peer0= dict(peer_ID =1001, host="10.138.187.221", port=8000)
+        #peer0= dict(peer_ID =1001, host="10.138.187.221", port=8000)
 
         #A list of dicts stores peers info.
-        self.peerInfo = [peer0]
+        self.peerInfo = read_peer_info()
+        self.local_peer = next(
+            peer for peer in self.peerInfo
+            if peer["peer_id"] == self.peer_id
+        )
 
 
     #Attempt connections to every peer that may already be running.
@@ -26,6 +35,8 @@ class PeerProcess():
         print("There are " + str(len(self.peerInfo)) + " servers available")
 
         for peer in self.peerInfo:
+            if peer["peer_id"] == self.peer_id:
+                continue
             addrLocalhost = peer["host"]
             port = peer["port"]
 
@@ -54,6 +65,7 @@ class PeerProcess():
             server = Server.Server()
             myServer = threading.Thread(
                 target=server.main,
+                args = (self.local_peer["port"],),
                 daemon=True
             )
             myServer.start()              
@@ -64,21 +76,22 @@ class PeerProcess():
 
 
     def run(self):
-        print("Starting PeerProcess.")
+        print(f"Starting PeerProcess {self.peer_id}.")
 
-        self.startClient()
+        self.startServer()
 
         time.sleep(0.5)
 
-        self.startServer()
+        self.startClient()
 
         # Keep the main thread alive while any clients run
         for t in self.server_thread:
             t.join()
     
 def main():
-    print("main is called")
-    myPeerProcess = PeerProcess();
+    print("Main is called")
+    peer_id = int(sys.argv[1])
+    myPeerProcess = PeerProcess(peer_id);
     myPeerProcess.run()
     
 if __name__ == "__main__":
