@@ -5,26 +5,33 @@ import io
 import struct
 import selectors
 import collections
+from Message import MESSAGE_TYPES 
+from Message import MESSAGE_NAMES 
+from Message import build_ActualMessage 
+from Message import build_HandshakeMessage 
+from Message import HANDSHAKE_LEN
+from Message import parse_HandshakeMessage
 
-sPort = 7234  # The server will be listening on this port number
+sPort = 8000  # The server will be listening on this port number
 
 class Server:
+
     @staticmethod
-    def main():
+    def main(peer_ID):
         print("The server is running.")
         listener = socket.create_server(("", sPort))
         clientNum = 1
         try:
             while True:
-                conn, _addr = listener.accept()
-                Server.Handler(conn, clientNum).start()
-                print(f"Client {clientNum} is connected.")
+                conn, addr = listener.accept()
+                print(f"Client {clientNum} is connected from {addr}.")
+                Server.Handler(conn, clientNum, peer_ID).start()
                 clientNum += 1
         finally:
             listener.close()
 
     class Handler(threading.Thread):
-        def __init__(self, connection, no):
+        def __init__(self, connection, no, peer_ID):
             super().__init__()
             self.message = None           # message received from the client
             self.MESSAGE = None           # Uppercase message send to the client
@@ -32,13 +39,25 @@ class Server:
             self.in_stream = None         # Stream read from the socket ("in" is reserved in Python)
             self.out = None               # Stream write to the socket
             self.no = no                  # The index number of the client
+            self.peer_ID = peer_ID
 
         def run(self):
             try:
                 # Initialize inputStream and outputStream
                 self.out = self.connection.makefile("w", encoding="utf-8")
                 self.in_stream = self.connection.makefile("r", encoding="utf-8")
+
                 try:
+                    #Whenever a connection is established between two peers, each of the peers of the 
+                    #connection sends to the other one the handshake message before sending other messages. 
+                    recvhsmsg = self._recv_exact(HANDSHAKE_LEN)
+                    header, remote_peer_ID = parse_HandshakeMessage(recvhsmsg)
+                    print("Server handshake message received")
+
+                    hsmsg = build_HandshakeMessage(self.peer_ID)
+                    self.connection.sendall(hsmsg)
+                    print("Server handshake message sent")
+
                     while True:
                         # Receive the message sent from the client
                         line = self.in_stream.readline()
@@ -64,13 +83,24 @@ class Server:
                     except OSError:
                         print(f"Disconnect with Client {self.no}")
 
+        #    #Receives 32-byte handshake message header
+        def _recv_exact(self, n: int) -> bytes:
+            buf = bytearray()
+            while len(buf) < n:
+                chunk = self.connection.recv(n - len(buf))
+                if not chunk:
+                    raise EOFError("Connection closed while receiving handshake")
+                buf.extend(chunk)
+            return bytes(buf)
+
         def send_message(self, msg):
             try:
                 self.out.write(msg + "\n")
                 self.out.flush()
-                print(f"Send message: {msg} to Client {self.no}")
+                print(f"Server send message: {msg} to Client {self.no}")
             except OSError as e:
                 print(f"I/O error: {e}")
-
+ 
 if __name__ == "__main__":
-    Server.main()
+    peer_ID = 1002
+    Server.main(peer_ID)
