@@ -35,14 +35,28 @@ MESSAGE_PAYLOADSIZE = {
 }
 
 HANDSHAKE_LEN = 32
-def build_message(msg_type, payload=b''):
-    length = 1 + len(payload)
 
-    return (
-        length.to_bytes(4, 'big')
-        + bytes([msg_type])
-        + payload
-    )
+#needs to figure out how to build the data of payload
+#Maybe a converstion (JPG to Bytefile) 
+def build_Payload() -> bytes:
+    payloadBytes = bytes(5);
+    return payloadBytes
+
+#Haven't implemented the payload yet. Need actual data of payload.
+def build_ActualMessage(msgLength, msgType, payload=b""):
+    lengthBytes = msgLength.to_bytes(4, 'big');
+    typeBytes = msgLength.to_bytes(1, 'big');
+
+    return (lengthBytes + typeBytes + payload)
+
+    # handshake message is 32 bytes.
+def build_HandshakeMessage(peer_ID):
+    #18 bytes
+    headerBytes = b"P2PFILESHARINGPROJ";
+    #10-byte zero bits
+    zeroBytes = bytes(10);
+    peerIDBytes = peer_ID.to_bytes(4, 'big');
+    return (headerBytes + zeroBytes + peerIDBytes)
     
 '''
     def parse_message():
