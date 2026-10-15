@@ -19,3 +19,24 @@ MESSAGE_NAMES = {
     6: "REQUEST",
     7: "PIECE"
 }
+
+def build_message(msg_type, payload=b''):
+    length = 1 + len(payload)
+
+    return (
+        length.to_bytes(4, 'big')
+        + bytes([msg_type])
+        + payload
+    )
+    
+'''
+    def parse_message():
+        length = recv(4)
+        type = recv(1)
+        payload = recv(length-1)
+'''
+
+'''
+File purpose:
+Used by PeerProcess.py
+'''
