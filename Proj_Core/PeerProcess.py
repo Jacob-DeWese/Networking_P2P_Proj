@@ -1,3 +1,4 @@
+
 class PeerProcess:
     def __init__(self, userID):
         self.server_thread = [];
@@ -43,19 +44,23 @@ class PeerProcess:
                     daemon=True
                 )
 
-                myClient.start()  
+                myClient.start()
+                aliveServer = aliveServer+1;          
                 print(f"Client created for {addrLocalhost}:{port}")
                 self.client_thread.append(myClient)
+                time.sleep(0.5)
+
             except Exception as e:
                 print(f"Failed client for {addrLocalhost}:{port}: {e}")
+        print("This end is peerID = "+ str(self.userID) +" There are " + str(aliveServer) + " servers alive.")
 
-
-
+    #Server starts listening for incoming connections
     def startServer(self):
         try:
             server = Server.Server()
             myServer = threading.Thread(
                 target=server.main,
+                args=(self.userID,),
                 daemon=True
             )
             myServer.start()              
@@ -74,18 +79,22 @@ class PeerProcess:
 
         self.startServer()
 
-        # Keep the main thread alive while any clients run
+        # Keep the main thread alive while the server (and any clients) run
         for t in self.server_thread:
             t.join()
     
 def main():
     print("main is called")
-    myPeerProcess = PeerProcess();
+    userID = int(sys.argv[1])
+    myPeerProcess = PeerProcess(userID);
     myPeerProcess.run()
-    
-if __name__ == "__main__":
-    main()       
 
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Please provide a peer_ID.")
+        sys.exit(1)
+    main()   
+    
 """
 File purpose:
 
