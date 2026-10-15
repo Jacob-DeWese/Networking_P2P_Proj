@@ -5,7 +5,7 @@ def read_common_cfg():
         for line in file:
             parts = line.split()  # split the line where there is a whitespace
             key = parts[0]  # the key will be the string value
-            if (key != "Filename"):
+            if (key != "FileName"):
                 value = int(parts[1])  # the value will the numbers and second half of the part
             else:
                 value = parts[1]
