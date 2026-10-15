@@ -57,6 +57,21 @@ def build_HandshakeMessage(peer_ID):
     zeroBytes = bytes(10);
     peerIDBytes = peer_ID.to_bytes(4, 'big');
     return (headerBytes + zeroBytes + peerIDBytes)
+
+#Parses the received handshake message
+def parse_HandshakeMessage(data: bytes):
+    if len(data) != 32:
+        raise ValueError("There are {len(data)} bytes in the handshake, not 32.")
+    headerBytes = data[0:18];
+    zeroBytes = data[18:28];
+    peer_ID = struct.unpack(">I", data[28:32])[0]
+
+    #Data Validation
+    if headerBytes !=  b"P2PFILESHARINGPROJ":
+        raise ValueError(f"Handshake header is wrong: {headerBytes!r}")
+    if zeroBytes != bytes(10):
+        raise ValueError("Handshake zero bits are not 10-byte zero bits")
+    return headerBytes, peer_ID
     
 '''
     def parse_message():
