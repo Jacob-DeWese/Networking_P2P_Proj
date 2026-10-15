@@ -1,3 +1,5 @@
+import struct
+
 MESSAGE_TYPES = {
     "CHOKE": 0,
     "UNCHOKE": 1,
@@ -19,6 +21,20 @@ MESSAGE_NAMES = {
     6: "REQUEST",
     7: "PIECE"
 }
+
+#need to figure out how to calculate the size for BITFIELD and pieces.
+MESSAGE_PAYLOADSIZE = {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 4,
+    5: 10,
+    6: 4,
+    7: 10
+}
+
+HANDSHAKE_LEN = 32
 
 def build_message(msg_type, payload=b''):
     length = 1 + len(payload)
