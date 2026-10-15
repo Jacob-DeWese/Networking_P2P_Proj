@@ -5,8 +5,11 @@ import io
 import struct
 import selectors
 import collections
+from Logger import log_event
 
-sPort = 7234  # The server will be listening on this port number
+sPort = 8000  # The server will be listening on this port number
+tcpEstablished = changeNeighPref = changeUnchokeNeigh = unchoking = choking = receiveHave = \
+    receiveInter = receiveNoInter = dwnldPiece = cmpltDwnld = False
 
 class Server:
     @staticmethod
@@ -17,7 +20,9 @@ class Server:
         try:
             while True:
                 conn, _addr = listener.accept()
+                tcpEstablished = True
                 Server.Handler(conn, clientNum).start()
+                log_event()
                 print(f"Client {clientNum} is connected.")
                 clientNum += 1
         finally:
