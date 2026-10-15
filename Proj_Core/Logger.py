@@ -1,6 +1,7 @@
 import time
 import os
-from ConfigReader import peers, config
+import ConfigReader
+peers = ConfigReader.read_peer_info()
 
 def log_event():
     import Server
