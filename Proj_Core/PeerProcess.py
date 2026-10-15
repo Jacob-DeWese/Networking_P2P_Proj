@@ -1,20 +1,14 @@
-import Client
-import Server
-import threading
-import time
-
-class PeerProcess():
-    def __init__(self):
+class PeerProcess:
+    def __init__(self, userID):
         self.server_thread = [];
         self.client_thread = [];
-        #A list of servers listed in PeerInfo.cfg Need peerInfo reader!
-        #peer0= dict(peer_ID =1001, host="192.168.1.131", port=8000)
-        #peer1= dict(peer_ID =1002, host="192.168.1.139", port=8000)
-        peer0= dict(peer_ID =1001, host="10.138.187.221", port=8000)
+        #A list of servers listed in PeerInfo.cfg. Hardcoding for testing purpose.
+        peer1= dict(peer_ID =1001, host="10.138.79.226", port=8000)
+        peer2= dict(peer_ID =1002, host="10.138.245.53", port=8000)
 
         #A list of dicts stores peers info.
-        self.peerInfo = [peer0]
-
+        self.peerInfo = [peer1, peer2]
+        self.userID = userID;
 
     #Attempt connections to every peer that may already be running.
     def startClient(self):
@@ -23,9 +17,13 @@ class PeerProcess():
             print("No server available")
             return
 
-        print("There are " + str(len(self.peerInfo)) + " servers available")
+        aliveServer = 0;
 
         for peer in self.peerInfo:
+
+            if peer["peer_ID"] == self.userID:
+                continue;
+
             addrLocalhost = peer["host"]
             port = peer["port"]
 
@@ -37,17 +35,21 @@ class PeerProcess():
                 continue
 
             try:
-                client = Client.Client(addrLocalhost, port)
+                
+                client = Client.Client(addrLocalhost, port, self.userID)
                 # IMPORTANT: pass the method itself, do NOT call it
                 myClient = threading.Thread(
                     target=client.run,
                     daemon=True
                 )
-                myClient.start()          
+
+                myClient.start()  
                 print(f"Client created for {addrLocalhost}:{port}")
                 self.client_thread.append(myClient)
             except Exception as e:
                 print(f"Failed client for {addrLocalhost}:{port}: {e}")
+
+
 
     def startServer(self):
         try:
