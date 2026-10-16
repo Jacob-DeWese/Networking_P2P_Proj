@@ -29,10 +29,9 @@ class PeerProcess():
         if len(self.peerInfo) == 0:
             print("No server available")
             return
-
         print("There are " + str(len(self.peerInfo)) + " servers available")
-		aliveServer = 0;
-
+        
+        aliveServer = 0;
         for peer in self.peerInfo:
             if peer["peer_id"] == self.peer_id:
                 continue
@@ -53,14 +52,14 @@ class PeerProcess():
                     target=client.run,
                     daemon=True
                 )
-                myClient.start()          
-				aliveServer = aliveServer+1;          
+                myClient.start()
+                aliveServer = aliveServer+1
                 print(f"Client created for {addrLocalhost}:{port}")
                 self.client_thread.append(myClient)
                 time.sleep(0.5)
             except Exception as e:
                 print(f"Failed client for {addrLocalhost}:{port}: {e}")
-		print("This end is peerID = "+ str(self.userID) +" There are " + str(aliveServer) + " servers alive.")
+        print("This end is peerID = "+ str(self.peer_id) +" There are " + str(aliveServer) + " servers alive.")
 
 
     def startServer(self):
