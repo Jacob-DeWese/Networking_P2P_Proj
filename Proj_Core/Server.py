@@ -24,23 +24,21 @@ if __name__ == "__main__":
 
 class Server:
     @staticmethod
-    def main(peer_ID):
-        global selfPeerID
-        selfPeerID = peer_ID
-        print("The server is running.")
-        listener = socket.create_server(("", sPort))
+    def main(port=8000):
+        print(f"The server is running on port {port}.")
+        listener = socket.create_server(("", port))
         clientNum = 1
         try:
             while True:
                 conn, addr = listener.accept()
                 print(f"Client {clientNum} is connected from {addr}.")
-                Server.Handler(conn, clientNum, peer_ID).start()
+                Server.Handler(conn, clientNum).start()
                 clientNum += 1
         finally:
             listener.close()
 
     class Handler(threading.Thread):
-        def __init__(self, connection, no, peer_ID):
+        def __init__(self, connection, no):
             super().__init__()
             self.message = None  # message received from the client
             self.MESSAGE = None  # Uppercase message send to the client
@@ -48,7 +46,6 @@ class Server:
             self.in_stream = None  # Stream read from the socket ("in" is reserved in Python)
             self.out = None  # Stream write to the socket
             self.no = no  # The index number of the client
-            self.peer_ID = peer_ID
 
         def run(self):
             global tcpEstablished, connToPeer, receiveInter, receiveNoInter, receiveHave, dwnldPiece, \
@@ -65,7 +62,7 @@ class Server:
                     header, remote_peer_ID = parse_HandshakeMessage(recvhsmsg)
                     print("Server handshake message received")
 
-                    hsmsg = build_HandshakeMessage(self.peer_ID)
+                    hsmsg = build_HandshakeMessage(selfPeerID)
                     self.connection.sendall(hsmsg)
                     print("Server handshake message sent")
 
@@ -136,5 +133,5 @@ class Server:
 
 
 if __name__ == "__main__":
-    peer_ID = 1002
-    Server.main(peer_ID)
+    selfPeerID = 1002
+    Server.main()
