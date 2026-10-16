@@ -4,26 +4,29 @@ import Client
 import Server
 import threading
 import time
+import sys
+import ConfigReader
 
 from ConfigReader import read_peer_info
 
 class PeerProcess():
-    def __init__(self, peer_id):
-        self.peer_id = peer_id
+    def __init__(self, peer_ID):
+        self.peer_ID = peer_ID
         self.server_thread = [];
         self.client_thread = [];
         #A list of servers listed in PeerInfo.cfg Need peerInfo reader!
         #peer0= dict(peer_ID =1001, host="192.168.1.131", port=8000)
         #peer1= dict(peer_ID =1002, host="192.168.1.139", port=8000)
-        #peer0= dict(peer_ID =1001, host="10.138.187.221", port=8000)
+        self.peerInfo = []
+        self.port = None
+        for peer in ConfigReader.read_peer_info():
+            if peer["peer_id"] == peer_ID:
+                self.port = peer["port"]
+                break
+            self.peerInfo.append(peer)
 
-        #A list of dicts stores peers info.
-        self.peerInfo = read_peer_info()
-        self.local_peer = next(
-            peer for peer in self.peerInfo
-            if peer["peer_id"] == self.peer_id
-        )
-
+        if self.port is None:
+            raise ValueError(f"Peer ID {peer_ID} not found in PeerInfo.cfg")
 
     #Attempt connections to every peer that may already be running.
     def startClient(self):
@@ -48,7 +51,7 @@ class PeerProcess():
                 continue
 
             try:
-                client = Client.Client(addrLocalhost, port)
+                client = Client.Client(addrLocalhost, port, self.peer_ID)
                 # IMPORTANT: pass the method itself, do NOT call it
                 myClient = threading.Thread(
                     target=client.run,
@@ -62,10 +65,10 @@ class PeerProcess():
 
     def startServer(self):
         try:
-            server = Server.Server()
+            Server.selfPeerID = self.peer_ID
             myServer = threading.Thread(
-                target=server.main,
-                args = (self.local_peer["port"],),
+                target=Server.Server.main,
+                args=(self.port,),
                 daemon=True
             )
             myServer.start()              

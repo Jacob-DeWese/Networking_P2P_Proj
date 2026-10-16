@@ -2,10 +2,10 @@ import time
 import os
 import ConfigReader
 peers = ConfigReader.read_peer_info()
+logStarted = False
 
 def log_event():
     import Server
-    import Client
 
     tcpEstablished = Server.tcpEstablished
     changeNeighPref = Server.changeNeighPref
@@ -13,14 +13,13 @@ def log_event():
     unchoking = Server.unchoking
     choking = Server.choking
     receiveHave = Server.receiveHave
-    receiveInter = Server.receiveInter,
+    receiveInter = Server.receiveInter
     receiveNoInter = Server.receiveNoInter
     dwnldPiece = Server.dwnldPiece
     cmpltDwnld = Server.cmpltDwnld
-    cPort = Client.cPort
 
-    peerID1 = 1000 # Placeholder to verify it accurately gets real id
-    peerID2 = cPort
+    peerID1 = Server.selfPeerID # Placeholder to verify it accurately gets real id
+    peerID2 = Server.connToPeer
     for peer in peers:
         port = peer['port']
         peer_id = peer['peer_id']
