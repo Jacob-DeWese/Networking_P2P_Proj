@@ -13,9 +13,9 @@ tcpEstablished = changeNeighPref = changeUnchokeNeigh = unchoking = choking = re
 
 class Server:
     @staticmethod
-    def main():
-        print("The server is running.")
-        listener = socket.create_server(("", sPort))
+    def main(port=8000):
+        print(f"The server is running on port {port}.")
+        listener = socket.create_server(("", port))
         clientNum = 1
         try:
             while True:

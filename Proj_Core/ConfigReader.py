@@ -3,7 +3,9 @@ def read_common_cfg():
     config = {}  # create a dictionary to store values
     with open("Common.cfg", "r") as file:
         for line in file:
-            parts = line.split()  # split the line where there is a whitespace
+            parts = line.split() # split the line where there is a whitespace
+            if not parts:
+                continue
             key = parts[0]  # the key will be the string value
             if (key != "FileName"):
                 value = int(parts[1])  # the value will the numbers and second half of the part
@@ -18,6 +20,8 @@ def read_peer_info():
     with open("PeerInfo.cfg", "r") as file:
         for line in file:
             parts = line.split()
+            if not parts:
+                continue
             peer_id = int(parts[0])
             host = parts[1]
             port = int(parts[2])
