@@ -9,28 +9,29 @@ import ConfigReader
 
 from ConfigReader import read_peer_info
 
+
 class PeerProcess():
-    def __init__(self, peer_ID):
-        self.peer_ID = peer_ID
+    def __init__(self, peer_id):
+        self.peer_id = peer_id
         self.server_thread = [];
         self.client_thread = [];
-        #A list of servers listed in PeerInfo.cfg Need peerInfo reader!
-        #peer0= dict(peer_ID =1001, host="192.168.1.131", port=8000)
-        #peer1= dict(peer_ID =1002, host="192.168.1.139", port=8000)
+        # A list of servers listed in PeerInfo.cfg Need peerInfo reader!
+        # peer0= dict(peer_ID =1001, host="192.168.1.131", port=8000)
+        # peer1= dict(peer_ID =1002, host="192.168.1.139", port=8000)
         self.peerInfo = []
         self.port = None
         for peer in ConfigReader.read_peer_info():
-            if peer["peer_id"] == peer_ID:
+            if peer["peer_id"] == peer_id:
                 self.port = peer["port"]
                 break
             self.peerInfo.append(peer)
 
         if self.port is None:
-            raise ValueError(f"Peer ID {peer_ID} not found in PeerInfo.cfg")
+            raise ValueError(f"Peer ID {peer_id} not found in PeerInfo.cfg")
 
-    #Attempt connections to every peer that may already be running.
+    # Attempt connections to every peer that may already be running.
     def startClient(self):
-        #for the first peerprocess
+        # for the first peerprocess
         if len(self.peerInfo) == 0:
             print("No server available")
             return
@@ -51,13 +52,13 @@ class PeerProcess():
                 continue
 
             try:
-                client = Client.Client(addrLocalhost, port, self.peer_ID)
+                client = Client.Client(addrLocalhost, port, self.peer_id)
                 # IMPORTANT: pass the method itself, do NOT call it
                 myClient = threading.Thread(
                     target=client.run,
                     daemon=True
                 )
-                myClient.start()          
+                myClient.start()
                 print(f"Client created for {addrLocalhost}:{port}")
                 self.client_thread.append(myClient)
             except Exception as e:
@@ -65,18 +66,17 @@ class PeerProcess():
 
     def startServer(self):
         try:
-            Server.selfPeerID = self.peer_ID
+            Server.selfPeerID = self.peer_id
             myServer = threading.Thread(
                 target=Server.Server.main,
                 args=(self.port,),
                 daemon=True
             )
-            myServer.start()              
+            myServer.start()
             print("Server started in background thread.")
             self.server_thread.append(myServer)
         except Exception as e:
             print(f"Failed to start server: {e}")
-
 
     def run(self):
         print(f"Starting PeerProcess {self.peer_id}.")
@@ -90,12 +90,14 @@ class PeerProcess():
         # Keep the main thread alive while any clients run
         for t in self.server_thread:
             t.join()
-    
+
+
 def main():
     print("Main is called")
     peer_id = int(sys.argv[1])
     myPeerProcess = PeerProcess(peer_id);
     myPeerProcess.run()
-    
+
+
 if __name__ == "__main__":
     main()
