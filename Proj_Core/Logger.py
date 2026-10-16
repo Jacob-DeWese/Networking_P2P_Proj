@@ -2,10 +2,10 @@ import time
 import os
 import ConfigReader
 peers = ConfigReader.read_peer_info()
+logStarted = False
 
 def log_event():
     import Server
-    import Client
 
     tcpEstablished = Server.tcpEstablished
     changeNeighPref = Server.changeNeighPref
@@ -17,10 +17,9 @@ def log_event():
     receiveNoInter = Server.receiveNoInter
     dwnldPiece = Server.dwnldPiece
     cmpltDwnld = Server.cmpltDwnld
-    cPort = Client.cPort
 
-    peerID1 = 1000 # Placeholder to verify it accurately gets real id
-    peerID2 = cPort
+    peerID1 = Server.selfPeerID # Placeholder to verify it accurately gets real id
+    peerID2 = Server.connToPeer
     for peer in peers:
         port = peer['port']
         peer_id = peer['peer_id']
@@ -31,10 +30,10 @@ def log_event():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file = f'log_peer_{peerID1}.log'
 
-    # Testing purposes: clear logging file on new start (delete when necessary)
-    with open(file, "r+") as f:
-        f.seek(0)
-        f.truncate()
+    # # Testing purposes: clear logging file on new start (delete when necessary)
+    # with open(file, "r+") as f:
+    #     f.seek(0)
+    #     f.truncate()
 
     log_path = os.path.join(script_dir, file)
     with open(log_path, 'a') as fp:
