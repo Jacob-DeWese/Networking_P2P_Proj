@@ -1,9 +1,13 @@
+import sys
+
 import Client
 import Server
 import threading
 import time
 import sys
 import ConfigReader
+
+from ConfigReader import read_peer_info
 
 class PeerProcess():
     def __init__(self, peer_ID):
@@ -34,6 +38,8 @@ class PeerProcess():
         print("There are " + str(len(self.peerInfo)) + " servers available")
 
         for peer in self.peerInfo:
+            if peer["peer_id"] == self.peer_id:
+                continue
             addrLocalhost = peer["host"]
             port = peer["port"]
 
@@ -73,21 +79,22 @@ class PeerProcess():
 
 
     def run(self):
-        print("Starting PeerProcess.")
+        print(f"Starting PeerProcess {self.peer_id}.")
 
-        self.startClient()
+        self.startServer()
 
         time.sleep(0.5)
 
-        self.startServer()
+        self.startClient()
 
         # Keep the main thread alive while any clients run
         for t in self.server_thread:
             t.join()
     
 def main():
-    print("main is called")
-    myPeerProcess = PeerProcess();
+    print("Main is called")
+    peer_id = int(sys.argv[1])
+    myPeerProcess = PeerProcess(peer_id);
     myPeerProcess.run()
     
 if __name__ == "__main__":
