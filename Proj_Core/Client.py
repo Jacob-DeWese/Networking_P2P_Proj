@@ -6,9 +6,10 @@ from Message import build_ActualMessage
 from Message import build_HandshakeMessage
 from Message import HANDSHAKE_LEN
 from Message import parse_HandshakeMessage
-
+import Logger
+#import Logger
 class Client:
-    def __init__(self,host="10.138.245.53",port=8000, peer_ID=1002):
+    def __init__(self, host, port, peer_ID, serverID):
         self.host = host
         self.port = port
         self.requestSocket = None  # Socket connect to server
@@ -17,6 +18,7 @@ class Client:
         self.message = ""          # Message send to the server
         self.MESSAGE = ""          # Capitalized message read from the server
         self.peer_ID = peer_ID
+        self.serverID = serverID
 
     def run(self):
         try:
@@ -33,6 +35,8 @@ class Client:
             recvhsmsg = self._recv_exact(HANDSHAKE_LEN)
             header, remote_peer_ID = parse_HandshakeMessage(recvhsmsg)
             print("Client handshake message received")
+            mylog = Logger.Logger(self.peer_ID, self.serverID)
+            mylog.clientTCP();
 
             # Initialize inputStream and outputStream
             self.out = self.requestSocket.makefile("w", encoding="utf-8")
@@ -80,7 +84,8 @@ class Client:
             print(f"I/O error: {e}", file=sys.stderr)
     '''
 
-    #Receives 32-byte handshake message header
+    #Receives 32-byte handshake message header 
+    #This function is wirtten with the help of AI, because I was unable to figure out how to recieve the bytes continuously.
     def _recv_exact(self, n: int) -> bytes:
         buf = bytearray()
         while len(buf) < n:
