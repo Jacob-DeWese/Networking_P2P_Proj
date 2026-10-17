@@ -131,7 +131,11 @@ class Server:
             except OSError as e:
                 print(f"I/O error: {e}")
 
-
+##Do not delete this function, or Server can't be tested individually
 if __name__ == "__main__":
-    selfPeerID = 1002
-    Server.main()
+    #Must be corresponding to the entries of PeerInfo.cfg
+    serverID = 1002
+    port = 6008
+
+    server = Server(serverID, port)
+    server.main(serverID, port)
