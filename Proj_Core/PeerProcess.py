@@ -75,13 +75,13 @@ class PeerProcess():
 
     def startServer(self):
         try:
-            server = Server.Server()
+            server = Server.Server(self.peer_id,self.port)
             myServer = threading.Thread(
                 target=server.main,
-                args = (self.peer_id,),
+                args = (self.peer_id,self.port),
                 daemon=True
             )
-            myServer.start()              
+            myServer.start()
             print("Server started in background thread.")
             self.server_thread.append(myServer)
         except Exception as e:
@@ -100,6 +100,12 @@ class PeerProcess():
         # Keep the main thread alive while any clients run
         for t in self.server_thread:
             t.join()
+
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("PeerProcess shutting down.")
     
 def main():
     print("Main is called")
