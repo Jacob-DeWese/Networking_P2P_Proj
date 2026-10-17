@@ -4,6 +4,7 @@ import Server
 import threading
 import time
 from ConfigReader import read_peer_info
+import socket
 
 class PeerProcess():
     def __init__(self, peer_id):
@@ -22,14 +23,18 @@ class PeerProcess():
             if peer["peer_id"] == self.peer_id
         )
 
+        for peer in self.peerInfo:
+            if peer['peer_id'] == self.peer_id:
+                self.port = peer['port']
+                break
 
     #Attempt connections to every peer that may already be running.
     def startClient(self):
         #for the first peerprocess
         if len(self.peerInfo) == 0:
-            print("No server available")
+            print("No peers available")
             return
-        print("There are " + str(len(self.peerInfo)) + " servers available")
+        print("There are " + str(len(self.peerInfo)) + " peers available")
         
         aliveServer = 0;
         for peer in self.peerInfo:
@@ -46,21 +51,27 @@ class PeerProcess():
                 continue
 
             try:
-                client = Client.Client(addrLocalhost, port, self.peer_id)
+                with socket.create_connection((addrLocalhost, port), timeout=1.0):
+                    pass
+
+                client = Client.Client(addrLocalhost, port, self.peer_id, peer["peer_id"])
                 # IMPORTANT: pass the method itself, do NOT call it
                 myClient = threading.Thread(
                     target=client.run,
-                    daemon=True
+                    daemon=True,
                 )
                 myClient.start()
-                aliveServer = aliveServer+1
                 print(f"Client created for {addrLocalhost}:{port}")
-                self.client_thread.append(myClient)
                 time.sleep(0.5)
+                self.client_thread.append(myClient)
+                aliveServer = aliveServer+1
+
             except Exception as e:
                 print(f"Failed client for {addrLocalhost}:{port}: {e}")
-        print("This end is peerID = "+ str(self.peer_id) +" There are " + str(aliveServer) + " servers alive.")
-
+                print("Note that it is normal for the first running peer to fail to connect to other peers.")
+        if aliveServer == 0:
+            print("The connection failed because the server(s) provided is not alive.")
+        print("This end is peerID = "+ str(self.peer_id) +" There are " + str(aliveServer) + " servers alive.\n")
 
     def startServer(self):
         try:
