@@ -62,11 +62,12 @@ class Server:
                     header, remote_peer_ID = parse_HandshakeMessage(recvhsmsg)
                     self.clientID= remote_peer_ID
                     print("Server's handshake message received")
-                    logger = Logger.Logger(self.serverID, self.clientID)
-                    logger.serverTCP();
                     hsmsg = build_HandshakeMessage(self.serverID)
                     self.connection.sendall(hsmsg)
                     print("Server's handshake message sent")
+                    
+                    mylog = Logger.Logger(self.serverID, self.clientID)
+                    mylog.serverTCP();
 
                     while True:
                         # Receive the message sent from the client
