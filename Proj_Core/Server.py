@@ -19,7 +19,7 @@ tcpEstablished = changeNeighPref = changeUnchokeNeigh = unchoking = choking = re
 class Server:
     @staticmethod
     def main(serverID):
-        print(f"The server is running on port {sPort}.")
+        print(f"The server "+ str(serverID) +"is running on port {sPort}.")
         listener = socket.create_server(("", sPort))
         clientNum = 1
         try:
@@ -52,13 +52,13 @@ class Server:
                 self.in_stream = self.connection.makefile("r", encoding="utf-8")
 
                 try:
-                    #hWhenever a connection is established between two peers, each of the peers of the 
+                    #Whenever a connection is established between two peers, each of the peers of the 
                     #connection sends to the other one the handshake message before sending other messages. 
 
                     recvhsmsg = self._recv_exact(HANDSHAKE_LEN)
                     header, remote_peer_ID = parse_HandshakeMessage(recvhsmsg)
                     self.clientID= remote_peer_ID
-                    print("Client's handshake message received")
+                    print("Server's handshake message received")
 
                     hsmsg = build_HandshakeMessage(self.serverID)
                     self.connection.sendall(hsmsg)
@@ -88,9 +88,9 @@ class Server:
                             stream.close()
                     except OSError:
                         print(f"Disconnect with Client {self.no}")
-        
+                        
+        #Receives 32-byte handshake message header
         def _recv_exact(self, n: int) -> bytes:
-            """Receive exactly n bytes or raise EOFError."""
             buf = bytearray()
             while len(buf) < n:
                 chunk = self.connection.recv(n - len(buf))
