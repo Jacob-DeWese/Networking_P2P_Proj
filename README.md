@@ -14,3 +14,9 @@ python Client.py  192.168.1.140,6008,1001,1002
 2. Testing Server and Client without PeerProcess
 python Server.py 1002 6008
 python Client.py  192.168.1.140,6008,1001,1002
+
+##Updated 10172026
+My sister and I have updated Server.py and Client.py. They merged Laurence's code.
+We also rewrote Logger.py. Now it can log the TCP connections and produce "log_peer_id.log".
+PeerProcess.py was also updated to support those changes.
+We haven't merged those changes on Main branch
