@@ -110,10 +110,16 @@ class Client:
         except OSError as e:
             print(f"I/O error: {e}", file=sys.stderr)
 
-
-# Main method
-'''
-if __name__ == "__main__":
-    client = Client()
+#Do not delete this function, or Client can't be tested individually
+def main(host, port, peer_ID, serverID):
+    client = Client(host, port, peer_ID, serverID)
     client.run()
-'''
+
+if __name__ == "__main__":
+    #Must be corresponding to the entries of PeerInfo.cfg
+    peer_ID = 1001  #your computer
+    serverID = 1002
+    host = "192.168.1.140"
+    port = 6008
+    client = Client(host, port, peer_ID, serverID)
+    client.run()
