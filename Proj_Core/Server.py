@@ -11,24 +11,27 @@ from Message import build_ActualMessage
 from Message import build_HandshakeMessage 
 from Message import HANDSHAKE_LEN
 from Message import parse_HandshakeMessage
+import Logger
 
-sPort = 8000  # The server will be listening on this port number
 tcpEstablished = changeNeighPref = changeUnchokeNeigh = unchoking = choking = receiveHave = \
     receiveInter = receiveNoInter = dwnldPiece = cmpltDwnld = False
 
 class Server:
+    def __init__(self, serverID, serverPort):
+        self.serverID = serverID
+        self.serverPort = serverPort
     @staticmethod
-    def main(serverID):
-        print(f"The server "+ str(serverID) +"is running on port {sPort}.")
-        listener = socket.create_server(("", sPort))
+    def main(serverID,serverPort):
+        print("The server "+ str(serverID) +" is running on port "+ str(serverPort))
+        listener = socket.create_server(("", serverPort))
         clientNum = 1
         try:
             while True:
-                conn, _addr = listener.accept()
+                conn, addr = listener.accept()
                 tcpEstablished = True
                 Server.Handler(conn, clientNum, serverID).start()
                 #log_event()
-                print(f"Client {clientNum} is connected.")
+                print(f"Client {clientNum} is connected from {addr}.")
                 clientNum += 1
         finally:
             listener.close()
@@ -59,7 +62,8 @@ class Server:
                     header, remote_peer_ID = parse_HandshakeMessage(recvhsmsg)
                     self.clientID= remote_peer_ID
                     print("Server's handshake message received")
-
+                    logger = Logger.Logger(self.serverID, self.clientID)
+                    logger.serverTCP();
                     hsmsg = build_HandshakeMessage(self.serverID)
                     self.connection.sendall(hsmsg)
                     print("Server's handshake message sent")
@@ -106,6 +110,7 @@ class Server:
                 #print(f"Send message: {msg} to Client {self.no}")
             except OSError as e:
                 print(f"I/O error: {e}")
-
+'''
 if __name__ == "__main__":
     Server.main()
+'''
