@@ -40,6 +40,8 @@ class Logger:
             
     #option 1
     def clientTCP(self):
+        timestr = datetime.now(timezone(timedelta(hours=-4)));
+        self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
         logstr = "["+self.Time+"]: Peer ["+ str(self.myID)+"] makes a connection to Peer ["+ str(self.peerID)+"].\n";
         with open(self.filename, "a") as file:
             file.write(logstr)
@@ -47,6 +49,8 @@ class Logger:
 
     #option 2
     def serverTCP(self):
+        timestr = datetime.now(timezone(timedelta(hours=-4)));
+        self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
         with open(self.filename, "a") as file:
             logstr = "["+self.Time+"]: Peer ["+ str(self.myID)+"] is connected from Peer ["+ str(self.peerID)+"].\n"
             file.write(logstr)
