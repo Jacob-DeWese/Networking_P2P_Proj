@@ -1,0 +1,14 @@
+* IMPORTANT: The actual code implementation is in the file 'Proj_Core'. The other files were for reference purposes *
+
+INSTRUCTIONS TO RUN
+* For quick testing of Server and Client *
+1) First, run the Server.py file
+2) Then, run the Client.py file
+3) Follow the instructions in Client.py that are output to terminal
+4) Check in Proj_Core, a new log file should be created for the peer
+
+* Testing PeerProcess (without using ConfigReader.py) on Two Computers *
+1) Update the PeerProcess.py peerInfo. Add Client IPaddr peer_ID and Server IPaddr peer_ID.
+2) Update the Client.py. Change localhost to the Server IPaddr.
+3) CMD: python PeerProcess your peerID
+4) python Client.py
