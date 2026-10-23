@@ -1,24 +1,24 @@
 import socket
 import sys
-import Server
-from Message import MESSAGE_TYPES
-from Message import MESSAGE_NAMES
-from Message import build_ActualMessage
+from Message import MESSAGE_TYPES 
+from Message import MESSAGE_NAMES 
+from Message import build_ActualMessage 
 from Message import build_HandshakeMessage
 from Message import HANDSHAKE_LEN
 from Message import parse_HandshakeMessage
-from Logger import log_event
-
+import Logger
+#import Logger
 class Client:
-    def __init__(self, host="10.138.245.53", port=8000, peer_ID=1002):
+    def __init__(self, host, port, peer_ID, serverID):
         self.host = host
         self.port = port
         self.requestSocket = None  # Socket connect to server
-        self.out = None  # Stream write to the socket
-        self.in_stream = None  # Stream read from the socket
-        self.message = ""  # Message send to the server
-        self.MESSAGE = ""  # Capitalized message read from the server
+        self.out = None            # Stream write to the socket
+        self.in_stream = None      # Stream read from the socket
+        self.message = ""          # Message send to the server
+        self.MESSAGE = ""          # Capitalized message read from the server
         self.peer_ID = peer_ID
+        self.serverID = serverID
 
     def run(self):
         try:
@@ -26,8 +26,8 @@ class Client:
             self.requestSocket = socket.create_connection((self.host, self.port))
             print(f"Connected to {self.host} in port {self.port}")
 
-            # Whenever a connection is established between two peers, each of the peers of the
-            # connection sends to the other one the handshake message before sending other messages.
+            #Whenever a connection is established between two peers, each of the peers of the 
+            #connection sends to the other one the handshake message before sending other messages. 
             hsmsg = build_HandshakeMessage(self.peer_ID)
             self.requestSocket.sendall(hsmsg)
             print("Client handshake sent")
@@ -35,13 +35,8 @@ class Client:
             recvhsmsg = self._recv_exact(HANDSHAKE_LEN)
             header, remote_peer_ID = parse_HandshakeMessage(recvhsmsg)
             print("Client handshake message received")
-            with Server.logLock:
-                Server.selfPeerID = self.peer_ID
-                Server.connToPeer = remote_peer_ID
-                Server.tcpEstablished = True
-                log_event()
-                Server.tcpEstablished = False
-                Server.connToPeer = None
+            mylog = Logger.Logger(self.peer_ID, self.serverID)
+            mylog.clientTCP();
 
             # Initialize inputStream and outputStream
             self.out = self.requestSocket.makefile("w", encoding="utf-8")
@@ -59,7 +54,7 @@ class Client:
                     print("Server closed the connection")
                     break
                 # Show the message to the user
-                # print("Receive message: " + self.MESSAGE)
+                #print("Receive message: " + self.MESSAGE)
 
         except ConnectionRefusedError:
             print("Connection refused. You need to initiate a server first.", file=sys.stderr)
@@ -89,7 +84,8 @@ class Client:
             print(f"I/O error: {e}", file=sys.stderr)
     '''
 
-    # Receives 32-byte handshake message header
+    #Receives 32-byte handshake message header 
+    #This function is wirtten with the help of AI, because I was unable to figure out how to recieve the bytes continuously.
     def _recv_exact(self, n: int) -> bytes:
         buf = bytearray()
         while len(buf) < n:
@@ -98,8 +94,8 @@ class Client:
                 raise EOFError("Connection closed while receiving data")
             buf.extend(chunk)
         return bytes(buf)
-
-    # Send a byte message to the output stream
+      
+    # Send a byte message to the output stream 
     def send_message(self, message):
         try:
             if isinstance(message, str):
@@ -109,17 +105,8 @@ class Client:
 
         except OSError as e:
             print(f"I/O error: {e}", file=sys.stderr)
-
-#Do not delete this function, or Client can't be tested individually
-def main(host, port, peer_ID, serverID):
-    client = Client(host, port, peer_ID, serverID)
-    client.run()
-
+           
+# Main method
 if __name__ == "__main__":
-    #Must be corresponding to the entries of PeerInfo.cfg
-    peer_ID = 1001  #your computer
-    serverID = 1002
-    host = "192.168.1.140"
-    port = 6008
-    client = Client(host, port, peer_ID, serverID)
+    client = Client()
     client.run()
