@@ -13,9 +13,6 @@ from Message import HANDSHAKE_LEN
 from Message import parse_HandshakeMessage
 import Logger
 
-tcpEstablished = changeNeighPref = changeUnchokeNeigh = unchoking = choking = receiveHave = \
-    receiveInter = receiveNoInter = dwnldPiece = cmpltDwnld = False
-
 class Server:
     def __init__(self, serverID, serverPort):
         self.serverID = serverID
@@ -28,7 +25,6 @@ class Server:
         try:
             while True:
                 conn, addr = listener.accept()
-                tcpEstablished = True
                 Server.Handler(conn, clientNum, serverID).start()
                 #log_event()
                 print(f"Client {clientNum} is connected from {addr}.")
