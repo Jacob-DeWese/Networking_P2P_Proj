@@ -14,6 +14,8 @@ def ensure_file_exists(filename: str):
         file_path.touch()
         print(f"'{filename}' did not exist and has been created.")
 
+# Will probably need to pass in the list of preferred neighbors as a parameter, that way it is easier for the function
+# to read it later, and limit passing data through
 class Logger:
     def __init__(self, myID, peerID):
         self.myID = myID;
@@ -36,85 +38,122 @@ class Logger:
             self.clientTCP();
         elif option == 2:
             self.serverTCP();
-    '''
+        elif option == 3:
+            self.changeNeighPref(peers);
+        elif option == 4:
+            self.changeUnchokeNeigh();
+        elif option == 5:
+            self.unchoking();
+        elif option == 6:
+            self.choking();
+        elif option == 7:
+            self.receiveHave();
+        elif option == 8:
+            self.receiveInter();
+        elif option == 9:
+            self.receiveNoInter();
+        elif option == 10:
+            self.downloadPiece();
+        elif option == 11:
+            self.downloadComplete();
             
-    #option 1
-    def clientTCP(self):
-        timestr = datetime.now(timezone(timedelta(hours=-4)));
-        self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
-        logstr = "["+self.Time+"]: Peer ["+ str(self.myID)+"] makes a connection to Peer ["+ str(self.peerID)+"].\n";
-        with open(self.filename, "a") as file:
-            file.write(logstr)
+    '''
 
+# Option 1
+def clientTCP(self):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = "["+self.Time+"]: Peer ["+ str(self.myID)+"] makes a connection to Peer ["+ str(self.peerID)+"].\n"
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
-    #option 2
-    def serverTCP(self):
-        timestr = datetime.now(timezone(timedelta(hours=-4)));
-        self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
-        with open(self.filename, "a") as file:
-            logstr = "["+self.Time+"]: Peer ["+ str(self.myID)+"] is connected from Peer ["+ str(self.peerID)+"].\n"
-            file.write(logstr)
+# Option 2
+def serverTCP(self):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    with open(self.filename, "a") as file:
+        logstr = "["+self.Time+"]: Peer ["+ str(self.myID)+"] is connected from Peer ["+ str(self.peerID)+"].\n"
+        file.write(logstr)
 
+# Option 3
+# This will need to be updated once neighbor preference is established, and I can get the list. Proof of concept
+def changeNeighPref(self, neighList):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = "[" + self.Time + "]: Peer [" + str(self.myID) + "] has the preferred neighbors [" + str(
+        neighList) + "].\n"
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
-'''
-#Jacob's code. Needs to rewrite them as functions.
-def log_event():
-    import Server
+# Option 4
+def changeUnchokeNeigh(self):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = "[" + self.Time + "]: Peer [" + str(self.myID) + "] has the optimistically unchoked neighbor [" + str(
+        self.peerID) + "].\n"
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
-    tcpEstablished = Server.tcpEstablished
-    changeNeighPref = Server.changeNeighPref
-    changeUnchokeNeigh = Server.changeUnchokeNeigh
-    unchoking = Server.unchoking
-    choking = Server.choking
-    receiveHave = Server.receiveHave
-    receiveInter = Server.receiveInter
-    receiveNoInter = Server.receiveNoInter
-    dwnldPiece = Server.dwnldPiece
-    cmpltDwnld = Server.cmpltDwnld
+# Option 5
+def unchoking(self):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = "[" + self.Time + "]: Peer [" + str(self.myID) + "] is unchoked by [" + str(
+        self.peerID) + "].\n"
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
-    peerID1 = Server.selfPeerID # Placeholder to verify it accurately gets real id
-    peerID2 = Server.connToPeer
-    for peer in peers:
-        port = peer['port']
-        peer_id = peer['peer_id']
-        if peer_id == peerID1:
-            peerID1 = peer_id
-            break
+# Option 6
+def choking(self):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = "[" + self.Time + "]: Peer [" + str(self.myID) + "] is choked by [" + str(
+        self.peerID) + "].\n"
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    file = f'log_peer_{peerID1}.log'
+# Option 7
+# This will need to be updated to get the actual piece
+def receiveHave(self, pieceInd):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = "[" + self.Time + "]: Peer [" + str(self.myID) + "] received the 'have' message from [" + str(
+        self.peerID) + "] for the piece [" + str(pieceInd) + "].\n"
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
-    # # Testing purposes: clear logging file on new start (delete when necessary)
-    # with open(file, "r+") as f:
-    #     f.seek(0)
-    #     f.truncate()
+# Option 8
+def receiveInter(self):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = "[" + self.Time + "]: Peer [" + str(self.myID) + "] received the 'interested' message from [" + str(
+        self.peerID) + "].\n"
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
-    log_path = os.path.join(script_dir, file)
-    with open(log_path, 'a') as fp:
-        if tcpEstablished:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] makes a connection to Peer [{peerID2}].\n")
-        # Following requires implementation of other functions to operate properly, here for future adjustment
-        elif changeNeighPref:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] has the preferred neighbors [preferred neighbor ID list].\n")
-        elif changeUnchokeNeigh:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] has the optimistically unchoked neighbor [{peerID2}].\n")
-        elif unchoking:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] is unchoked by [{peerID2}].\n")
-        elif choking:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] is choked by [{peerID2}].\n")
-        elif receiveHave:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] received the 'have' message from [{peerID2}] for the piece [piece index].\n")
-        elif receiveInter:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] received the 'interested' message from [{peerID2}].\n")
-        elif receiveNoInter:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] received the 'not interested' message from [{peerID2}].\n")
-        elif dwnldPiece:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] has downloaded the piece [piece index] from [{peerID2}]. Now the number of pieces it has is [number of pieces]\n")
-        elif cmpltDwnld:
-            fp.write(f"[{time.ctime()}]: Peer [{peerID1}] has downloaded the complete file.\n")
+# Option 9
+def receiveNoInter(self):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = "[" + self.Time + "]: Peer [" + str(self.myID) + "] received the 'not interested' message from [" + str(
+        self.peerID) + "].\n"
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
-    dir_list = os.listdir(script_dir)
-    print("List of directories and files after creation: ")
-    print(dir_list)
-'''
+# Option 10
+def downloadPiece(self, pieceInd, numPieces):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = ("[" + self.Time + "]: Peer [" + str(self.myID) + "] downloaded the piece [" + str(pieceInd)
+              + "] from [" + str(self.peerID) + "]. Now the number of pieces it has is [" + str(numPieces)
+              + "].\n")
+    with open(self.filename, "a") as file:
+        file.write(logstr)
 
+# Option 11
+def downloadComp(self):
+    timestr = datetime.now(timezone(timedelta(hours=-4)))
+    self.Time = timestr.strftime("%m-%d-%Y %H:%M:%S")
+    logstr = ("[" + self.Time + "]: Peer [" + str(self.myID) + "] has downloaded the complete file.\n")
+    with open(self.filename, "a") as file:
+        file.write(logstr)

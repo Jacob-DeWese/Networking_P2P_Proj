@@ -25,7 +25,6 @@ class Server:
         try:
             while True:
                 conn, addr = listener.accept()
-                tcpEstablished = True
                 Server.Handler(conn, clientNum, serverID).start()
                 #log_event()
                 print(f"Client {clientNum} is connected from {addr}.")
