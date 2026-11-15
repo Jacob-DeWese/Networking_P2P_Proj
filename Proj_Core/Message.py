@@ -73,8 +73,10 @@ def parse_HandshakeMessage(data: bytes):
         raise ValueError("Handshake zero bits are not 10-byte zero bits")
     return headerBytes, peer_ID
 
+"""
+Logger testing (builds and parses the actual messages for the logger, unsure if necessary with build
+of choking manager later, commented out for now
 
-# Logger implementation: creating two new functions to get the actual message for the logger
 def buildMsg(msgType, payload = b""):
     length = 1 + len(payload)
     return length.to_bytes(4, 'big') + msgType.to_bytes(1, 'big') + payload
@@ -83,6 +85,8 @@ def parseMsg(recv_exact):
     length = int.from_bytes(recv_exact(4), 'big')
     body = recv_exact(length)
     return body[0], body[1:]
+"""
+
     
 '''
     def parse_message():
