@@ -6,8 +6,9 @@ from Message import build_ActualMessage
 from Message import build_HandshakeMessage
 from Message import HANDSHAKE_LEN
 from Message import parse_HandshakeMessage
+from Message import parseMsg
 import Logger
-#import Logger
+
 class Client:
     def __init__(self, host, port, peer_ID, serverID):
         self.host = host
@@ -85,7 +86,7 @@ class Client:
     '''
 
     #Receives 32-byte handshake message header 
-    #This function is wirtten with the help of AI, because I was unable to figure out how to recieve the bytes continuously.
+    #This function is written with the help of AI, because I was unable to figure out how to recieve the bytes continuously.
     def _recv_exact(self, n: int) -> bytes:
         buf = bytearray()
         while len(buf) < n:
