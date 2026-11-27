@@ -11,7 +11,6 @@ from Message import build_ActualMessage
 from Message import build_HandshakeMessage 
 from Message import HANDSHAKE_LEN
 from Message import parse_HandshakeMessage
-from Message import parseMsg
 import Logger
 
 class Server:
@@ -78,20 +77,6 @@ class Server:
                         self.MESSAGE = self.message.upper()
                         # Send MESSAGE back to the client
                         self.send_message(self.MESSAGE)
-
-                        # Logging testing implementation
-                        msgType, payload = parseMsg(self._recv_exact)
-                        name = MESSAGE_NAMES[msgType]
-                        if name == "INTERESTED":
-                            mylog.receiveInter()
-                        elif name == "NOT_INTERESTED":
-                            mylog.receiveNoInter()
-                        elif name == "CHOKE":
-                            mylog.choking()
-                        elif name == "UNCHOKE":
-                            mylog.unchoking()
-                        elif name == "HAVE":
-                            mylog.receiveHave(int.from_bytes(payload, "big"))
 
                 except UnicodeDecodeError:
                     print("Data received in unknown format", file=sys.stderr)
